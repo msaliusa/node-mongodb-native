@@ -1000,6 +1000,12 @@ describe('APM', function() {
       return setupDatabase(this.configuration);
     });
 
+    var stripSessionsInfo = command => {
+      const result = Object.assign({}, command);
+      delete result.lsid;
+      return result;
+    };
+
     var filterSessionsCommands = x => x.filter(y => y.commandName !== 'endSessions');
     var validateExpecations = function(expectation, results) {
       var obj, databaseName, commandName, reply, result;
@@ -1028,7 +1034,7 @@ describe('APM', function() {
         } else if (commandName === 'killCursors') {
           // eslint-disable-line
         } else {
-          expect(command).to.eql(result.command);
+          expect(stripSessionsInfo(result.command)).to.eql(command);
         }
       } else if (expectation.command_succeeded_event) {
         obj = expectation.command_succeeded_event;
